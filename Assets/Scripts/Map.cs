@@ -7,10 +7,11 @@ public class Map : MonoBehaviour {
 
     public enum Direction { Up, Down, Left, Right};
 
-    private List<Transform> walkableObjects = new List<Transform>();
-    private List<Transform> obstacles = new List<Transform>();
-    private List<Transform> enemies = new List<Transform>();
-    private Vector3 playerPosition;
+    List<Transform> walkableObjects = new List<Transform>();
+    List<Transform> obstacles = new List<Transform>();
+    List<Transform> enemies = new List<Transform>();
+    Vector3 playerPosition;
+    GameManager gm;
 
     private void Awake()
     {
@@ -18,10 +19,7 @@ public class Map : MonoBehaviour {
             Instance = this;
         else
             Destroy(gameObject);
-    }
 
-    private void Start()
-    {
         //Find objects
         foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Walkable"))
             walkableObjects.Add(obj.GetComponent<Transform>());
@@ -33,85 +31,108 @@ public class Map : MonoBehaviour {
             enemies.Add(obj.GetComponent<Transform>());
     }
 
+    private void Start()
+    {
+        gm = GameManager.Instance;  
+    }
+
     public void Hit(Vector3 position)
     {
-        for (int i = 0; i < obstacles.Count; i++)
+        if (!gm.Won)
         {
-            if (obstacles[i].position == position + Vector3.up)
+            for (int i = 0; i < obstacles.Count; i++)
             {
-                IDamagable top = obstacles[i].GetComponent<IDamagable>();
-                if (top != null)
-                    top.Damage();
+                if (obstacles[i].position == position + Vector3.up)
+                {
+                    IDamagable top = obstacles[i].GetComponent<IDamagable>();
+                    if (top != null)
+                        top.Damage();
+                }
+                if (obstacles[i].position == position + Vector3.down)
+                {
+                    IDamagable down = obstacles[i].GetComponent<IDamagable>();
+                    if (down != null)
+                        down.Damage();
+                }
+                if (obstacles[i].position == position + Vector3.left)
+                {
+                    IDamagable left = obstacles[i].GetComponent<IDamagable>();
+                    if (left != null)
+                        left.Damage();
+                }
+                if (obstacles[i].position == position + Vector3.right)
+                {
+                    IDamagable right = obstacles[i].GetComponent<IDamagable>();
+                    if (right != null)
+                        right.Damage();
+                }
             }
-            if (obstacles[i].position == position + Vector3.down)
-            {
-                IDamagable down = obstacles[i].GetComponent<IDamagable>();
-                if (down != null)
-                    down.Damage();
-            }
-            if (obstacles[i].position == position + Vector3.left)
-            {
-                IDamagable left = obstacles[i].GetComponent<IDamagable>();
-                if (left != null)
-                    left.Damage();
-            }
-            if (obstacles[i].position == position + Vector3.right)
-            {
-                IDamagable right = obstacles[i].GetComponent<IDamagable>();
-                if (right != null)
-                    right.Damage();
-            }
-        }
 
-        //Move all enemies towards the player
-        for (int i = 0; i < enemies.Count; i++)
-        {
-            enemies[i].GetComponent<Enemy>().MoveTowardsTarget(playerPosition);
+            //Move all enemies towards the player
+            if (!gm.Won)
+            {
+                for (int i = 0; i < enemies.Count; i++)
+                {
+                    enemies[i].GetComponent<Enemy>().MoveTowardsTarget(playerPosition);
+                }
+            }
+            if (IsPlayerOnEnemy())
+                Debug.Log("You are dead.");
+
+            gm.RemoveBattery();
         }
-        if (IsPlayerOnEnemy())
-            Debug.Log("You are dead.");
     }
 
     public void Move(Transform target,Direction direction, bool player)
     {
-        Vector2 wantedPosition = target.position;
-        switch (direction)
+        if (!gm.Won)
         {
-            case Direction.Up:
-                wantedPosition += Vector2.up;
-                break;
-            case Direction.Down:
-                wantedPosition += Vector2.down;
-                break;
-            case Direction.Left:
-                wantedPosition += Vector2.left;
-                break;
-            case Direction.Right:
-                wantedPosition += Vector2.right;
-                break;
-        }
-        if (Walkable(wantedPosition))
-        {
-            target.position = wantedPosition;
+            Vector2 wantedPosition = target.position;
+            switch (direction)
+            {
+                case Direction.Up:
+                    wantedPosition += Vector2.up;
+                    break;
+                case Direction.Down:
+                    wantedPosition += Vector2.down;
+                    break;
+                case Direction.Left:
+                    wantedPosition += Vector2.left;
+                    break;
+                case Direction.Right:
+                    wantedPosition += Vector2.right;
+                    break;
+            }
+            if (Walkable(wantedPosition))
+            {
+                target.position = wantedPosition;
+                if (player)
+                {
+                    playerPosition = target.position;
+                }
+                if (IsPlayerOnEnemy())
+                {
+                    Debug.Log("You are dead.");
+                    return;
+                }
+            }
             if (player)
-                playerPosition = target.position;
-            if (IsPlayerOnEnemy())
             {
-                Debug.Log("You are dead.");
-                return;
-            }
-        }
-        if (player)
-        {
-            PickupItem(playerPosition);
+                gm.RemoveBattery();
+                PickupItem(playerPosition);
 
-            //Move all enemies towards the player
-            for (int i = 0; i < enemies.Count; i++)
-            {
-                enemies[i].GetComponent<Enemy>().MoveTowardsTarget(playerPosition);
+                //Move all enemies towards the player
+                if (!gm.Won)
+                {
+                    for (int i = 0; i < enemies.Count; i++)
+                    {
+                        enemies[i].GetComponent<Enemy>().MoveTowardsTarget(playerPosition);
+                    }
+                    
+                }
+                if (IsPlayerOnEnemy())
+                    Debug.Log("You are dead.");
             }
-            if (IsPlayerOnEnemy())
-                Debug.Log("You are dead.");
         }
     }
 
@@ -163,6 +184,17 @@ public class Map : MonoBehaviour {
                     item.Pickup();
             }
         }
+    }
+
+    public int GetLevelGold()
+    {
+        int goldCount = 0;
+        for (int i = 0; i < obstacles.Count; i++)
+        {
+            if (obstacles[i].GetComponent<Gold>())
+                goldCount++;
+        }
+        return goldCount;
     }
 
     private bool IsPlayerOnEnemy()

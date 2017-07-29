@@ -1,9 +1,10 @@
 using UnityEngine;
 
-public class GoldNugget : MonoBehaviour, IPickupable
-{
-    Map map;
+public class Battery : MonoBehaviour, IPickupable {
+
+    public int Batteries = 1;
     GameManager gm;
+    Map map;
 
     private void Start()
     {
@@ -13,8 +14,8 @@ public class GoldNugget : MonoBehaviour, IPickupable
 
     public void Pickup()
     {
+        gm.AddBatteries(Batteries);
         map.RemoveObstacle(transform);
-        gm.AddGold();
         Destroy(gameObject);
     }
 }
