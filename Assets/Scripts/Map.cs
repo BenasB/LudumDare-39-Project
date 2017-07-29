@@ -191,7 +191,7 @@ public class Map : MonoBehaviour {
         int goldCount = 0;
         for (int i = 0; i < obstacles.Count; i++)
         {
-            if (obstacles[i].GetComponent<Gold>())
+            if (obstacles[i].GetComponent<Gold>() || obstacles[i].GetComponent<GoldNugget>())
                 goldCount++;
         }
         return goldCount;
