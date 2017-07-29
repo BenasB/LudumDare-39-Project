@@ -33,6 +33,45 @@ public class Map : MonoBehaviour {
             enemies.Add(obj.GetComponent<Transform>());
     }
 
+    public void Hit(Vector3 position)
+    {
+        for (int i = 0; i < obstacles.Count; i++)
+        {
+            if (obstacles[i].position == position + Vector3.up)
+            {
+                IDamagable top = obstacles[i].GetComponent<IDamagable>();
+                if (top != null)
+                    top.Damage();
+            }
+            if (obstacles[i].position == position + Vector3.down)
+            {
+                IDamagable down = obstacles[i].GetComponent<IDamagable>();
+                if (down != null)
+                    down.Damage();
+            }
+            if (obstacles[i].position == position + Vector3.left)
+            {
+                IDamagable left = obstacles[i].GetComponent<IDamagable>();
+                if (left != null)
+                    left.Damage();
+            }
+            if (obstacles[i].position == position + Vector3.right)
+            {
+                IDamagable right = obstacles[i].GetComponent<IDamagable>();
+                if (right != null)
+                    right.Damage();
+            }
+        }
+
+        //Move all enemies towards the player
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            enemies[i].GetComponent<Enemy>().MoveTowardsTarget(playerPosition);
+        }
+        if (IsPlayerOnEnemy())
+            Debug.Log("You are dead.");
+    }
+
     public void Move(Transform target,Direction direction, bool player)
     {
         Vector2 wantedPosition = target.position;
@@ -64,6 +103,9 @@ public class Map : MonoBehaviour {
         }
         if (player)
         {
+            PickupItem(playerPosition);
+
+            //Move all enemies towards the player
             for (int i = 0; i < enemies.Count; i++)
             {
                 enemies[i].GetComponent<Enemy>().MoveTowardsTarget(playerPosition);
@@ -76,6 +118,16 @@ public class Map : MonoBehaviour {
     public void Move(Transform target, Vector3 position)
     {
         target.position = position;
+    }
+
+    public void RemoveObstacle(Transform transform)
+    {
+        obstacles.Remove(transform);
+    }
+
+    public void AddObstacle(Transform transform)
+    {
+        obstacles.Add(transform);
     }
 
     private bool Walkable(Vector3 position)
@@ -91,13 +143,26 @@ public class Map : MonoBehaviour {
         }
         for (int i = 0; i < obstacles.Count; i++)
         {
-            if (obstacles[i].position == position)
+            if (obstacles[i].position == position && obstacles[i].GetComponent<IPickupable>() == null)
             {
                 canWalk = false;
                 break;
             }
         }
         return canWalk;
+    }
+
+    private void PickupItem(Vector3 position)
+    {
+        for (int i = 0; i < obstacles.Count; i++)
+        {
+            if (obstacles[i].position == position)
+            {
+                IPickupable item = obstacles[i].GetComponent<IPickupable>();
+                if (item != null)
+                    item.Pickup();
+            }
+        }
     }
 
     private bool IsPlayerOnEnemy()

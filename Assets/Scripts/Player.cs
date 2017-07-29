@@ -22,5 +22,8 @@ public class Player : MonoBehaviour {
             map.Move(transform, Map.Direction.Left, true);
         if (Input.GetButtonDown("Right"))
             map.Move(transform, Map.Direction.Right, true);
+
+        if (Input.GetButtonDown("Action"))
+            map.Hit(transform.position);
     }
 }
