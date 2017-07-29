@@ -15,12 +15,12 @@ public class Player : MonoBehaviour {
     private void Update()
     {
         if (Input.GetButtonDown("Up"))
-            map.Move(transform, Map.Direction.Up);
+            map.Move(transform, Map.Direction.Up, true);
         if (Input.GetButtonDown("Down"))
-            map.Move(transform, Map.Direction.Down);
+            map.Move(transform, Map.Direction.Down, true);
         if (Input.GetButtonDown("Left"))
-            map.Move(transform, Map.Direction.Left);
+            map.Move(transform, Map.Direction.Left, true);
         if (Input.GetButtonDown("Right"))
-            map.Move(transform, Map.Direction.Right);
+            map.Move(transform, Map.Direction.Right, true);
     }
 }

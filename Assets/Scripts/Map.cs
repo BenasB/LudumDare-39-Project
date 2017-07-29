@@ -6,9 +6,11 @@ public class Map : MonoBehaviour {
     public static Map Instance;
 
     public enum Direction { Up, Down, Left, Right};
-    public Transform[] WalkableObjects;
 
-    private List<Vector2> territory = new List<Vector2>();
+    private List<Transform> walkableObjects = new List<Transform>();
+    private List<Transform> obstacles = new List<Transform>();
+    private List<Transform> enemies = new List<Transform>();
+    private Vector3 playerPosition;
 
     private void Awake()
     {
@@ -20,13 +22,18 @@ public class Map : MonoBehaviour {
 
     private void Start()
     {
-        for (int i = 0; i < WalkableObjects.Length; i++)
-        {
-            territory.Add(WalkableObjects[i].transform.position);
-        }
+        //Find objects
+        foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Walkable"))
+            walkableObjects.Add(obj.GetComponent<Transform>());
+
+        foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Obstacle"))
+            obstacles.Add(obj.GetComponent<Transform>());
+
+        foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Enemy"))
+            enemies.Add(obj.GetComponent<Transform>());
     }
 
-    public void Move(Transform target,Direction direction)
+    public void Move(Transform target,Direction direction, bool player)
     {
         Vector2 wantedPosition = target.position;
         switch (direction)
@@ -47,20 +54,78 @@ public class Map : MonoBehaviour {
         if (Walkable(wantedPosition))
         {
             target.position = wantedPosition;
+            if (player)
+                playerPosition = target.position;
+            if (IsPlayerOnEnemy())
+            {
+                Debug.Log("You are dead.");
+                return;
+            }
+        }
+        if (player)
+        {
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                enemies[i].GetComponent<Enemy>().MoveTowardsTarget(playerPosition);
+            }
+            if (IsPlayerOnEnemy())
+                Debug.Log("You are dead.");
         }
     }
 
-    private bool Walkable(Vector2 position)
+    public void Move(Transform target, Vector3 position)
+    {
+        target.position = position;
+    }
+
+    private bool Walkable(Vector3 position)
     {
         bool canWalk = false;
-        for (int i = 0; i < territory.Count; i++)
+        for (int i = 0; i < walkableObjects.Count; i++)
         {
-            if (territory[i] == position)
+            if (walkableObjects[i].position == position)
             {
                 canWalk = true;
                 break;
             }
         }
+        for (int i = 0; i < obstacles.Count; i++)
+        {
+            if (obstacles[i].position == position)
+            {
+                canWalk = false;
+                break;
+            }
+        }
         return canWalk;
+    }
+
+    private bool IsPlayerOnEnemy()
+    {
+        bool isPlayerOnEnemy = false;
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            if (playerPosition == enemies[i].position)
+            {
+                isPlayerOnEnemy = true;
+                break;
+            }
+        }
+        return isPlayerOnEnemy;
+    }
+
+    public IList<Vector3> GetWalkableNodes(Vector3 currentNode)
+    {
+        IList<Vector3> listToReturn = new List<Vector3>();
+        if (Walkable(currentNode + Vector3.up))
+            listToReturn.Add(currentNode + Vector3.up);
+        if (Walkable(currentNode + Vector3.down))
+            listToReturn.Add(currentNode + Vector3.down);
+        if (Walkable(currentNode + Vector3.right))
+            listToReturn.Add(currentNode + Vector3.right);
+        if (Walkable(currentNode + Vector3.left))
+            listToReturn.Add(currentNode + Vector3.left);
+
+        return listToReturn;
     }
 }
