@@ -7,12 +7,12 @@ public class GameManager : MonoBehaviour {
     public static GameManager Instance;
 
     public Material MineMaterial;
-    public Color Dark;
     public int StartBatteries;
     public Text BatteryText;
 
     public GameObject CompletionPanel;
     public GameObject RetryPanel;
+    public GameObject PausePanel;
 
     public AudioClip BatteryPickupClip;
     public AudioClip GoldPickupClip;
@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour {
 
     public bool Won { get; set; }
     public bool Dead { get; set; }
+    public bool Pause { get; set; }
 
     private void Awake()
     {
@@ -38,6 +39,25 @@ public class GameManager : MonoBehaviour {
             Destroy(gameObject);
 
         MineMaterial.color = Color.white;
+    }
+
+    private void Update()
+    {
+        if (Input.GetButtonDown("Cancel") && !Pause)
+        {
+            Pause = true;
+            PausePanel.SetActive(true);
+        }else if (Input.GetButtonDown("Cancel") && Pause)
+        {
+            Pause = false;
+            PausePanel.SetActive(false);
+        }
+    }
+
+    public void ReturnToGame()
+    {
+        Pause = false;
+        PausePanel.SetActive(false);
     }
 
     private void Start()
@@ -50,6 +70,7 @@ public class GameManager : MonoBehaviour {
         BatteryText.text = "x" + batteryCount.ToString();
         CompletionPanel.SetActive(false);
         RetryPanel.SetActive(false);
+        PausePanel.SetActive(false);
     }
 
     public void AddGold()
@@ -115,10 +136,10 @@ public class GameManager : MonoBehaviour {
         float speed = 7f;
         do
         {
-            Vector3 newColor = Vector3.MoveTowards(new Vector3(MineMaterial.color.r, MineMaterial.color.g, MineMaterial.color.b), new Vector3(Dark.r,Dark.g, Dark.b), speed*Time.deltaTime);
+            Vector3 newColor = Vector3.MoveTowards(new Vector3(MineMaterial.color.r, MineMaterial.color.g, MineMaterial.color.b), new Vector3(Color.black.r, Color.black.g, Color.black.b), speed*Time.deltaTime);
             MineMaterial.color = new Vector4(newColor.x, newColor.y, newColor.z, 1.0f);
             yield return new WaitForEndOfFrame();
-        } while (MineMaterial.color != Dark);
+        } while (MineMaterial.color != Color.black);
     }
 
     IEnumerator Lighten()
@@ -129,7 +150,7 @@ public class GameManager : MonoBehaviour {
             Vector3 newColor = Vector3.MoveTowards(new Vector3(MineMaterial.color.r, MineMaterial.color.g, MineMaterial.color.b), new Vector3(Color.white.r, Color.white.g, Color.white.b), speed * Time.deltaTime);
             MineMaterial.color = new Vector4(newColor.x, newColor.y, newColor.z, 1.0f);
             yield return new WaitForEndOfFrame();
-        } while (MineMaterial.color != Dark);
+        } while (MineMaterial.color != Color.white);
     }
 
     public void ResetMaterialColor()

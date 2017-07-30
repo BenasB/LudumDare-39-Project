@@ -27,4 +27,9 @@ public class UIManager : MonoBehaviour {
         gm.ResetMaterialColor();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
+
+    public void Unpause()
+    {
+        gm.ReturnToGame();
+    }
 }

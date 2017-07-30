@@ -23,7 +23,7 @@ public class Player : MonoBehaviour {
 
     private void Update()
     {
-        if (!gm.Dead && !gm.Won)
+        if (!gm.Dead && !gm.Won && !gm.Pause)
         {
             if (Input.GetButtonDown("Up"))
             {
