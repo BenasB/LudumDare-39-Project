@@ -12,7 +12,8 @@ public class UIManager : MonoBehaviour {
 
     public void ExitToMenu()
     {
-        gm.ResetMaterialColor();
+        if (gm)
+            gm.ResetMaterialColor();
         SceneManager.LoadScene("Menu");
     }
 

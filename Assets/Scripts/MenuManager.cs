@@ -42,6 +42,7 @@ public class MenuManager : MonoBehaviour {
 
     public void StartGame()
     {
+        Debug.Log(PlayerPrefs.GetInt("Level"));
         SceneManager.LoadScene("Level " + PlayerPrefs.GetInt("Level"));
     }
 
