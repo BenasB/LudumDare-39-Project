@@ -40,31 +40,50 @@ public class Map : MonoBehaviour {
     {
         if (!gm.Won)
         {
+            List<Transform> obstaclesAtThisMoment = new List<Transform>();
+
             for (int i = 0; i < obstacles.Count; i++)
             {
-                if (obstacles[i].position == position + Vector3.up)
+                obstaclesAtThisMoment.Add(obstacles[i]);
+            }
+
+            for (int i = 0; i < obstaclesAtThisMoment.Count; i++)
+            {
+                if (obstaclesAtThisMoment[i].position == position + Vector3.up)
                 {
-                    IDamagable top = obstacles[i].GetComponent<IDamagable>();
+                    IDamagable top = obstaclesAtThisMoment[i].GetComponent<IDamagable>();
                     if (top != null)
+                    {
                         top.Damage();
+                        continue;
+                    }
                 }
-                if (obstacles[i].position == position + Vector3.down)
+                if (obstaclesAtThisMoment[i].position == position + Vector3.down)
                 {
-                    IDamagable down = obstacles[i].GetComponent<IDamagable>();
+                    IDamagable down = obstaclesAtThisMoment[i].GetComponent<IDamagable>();
                     if (down != null)
+                    {
                         down.Damage();
+                        continue;
+                    }
                 }
-                if (obstacles[i].position == position + Vector3.left)
+                if (obstaclesAtThisMoment[i].position == position + Vector3.left)
                 {
-                    IDamagable left = obstacles[i].GetComponent<IDamagable>();
+                    IDamagable left = obstaclesAtThisMoment[i].GetComponent<IDamagable>();
                     if (left != null)
+                    {
                         left.Damage();
+                        continue;
+                    }
                 }
-                if (obstacles[i].position == position + Vector3.right)
+                if (obstaclesAtThisMoment[i].position == position + Vector3.right)
                 {
-                    IDamagable right = obstacles[i].GetComponent<IDamagable>();
+                    IDamagable right = obstaclesAtThisMoment[i].GetComponent<IDamagable>();
                     if (right != null)
+                    {
                         right.Damage();
+                        continue;
+                    }
                 }
             }
 
