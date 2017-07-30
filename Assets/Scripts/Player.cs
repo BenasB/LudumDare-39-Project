@@ -46,7 +46,7 @@ public class Player : MonoBehaviour {
                 PlayClip(MoveClip);
             }
 
-            if (Input.GetButtonDown("Action"))
+            if (Input.GetButtonDown("Hit"))
             {
                 map.Hit(transform.position);
                 PlayClip(ActionClip);
@@ -57,6 +57,7 @@ public class Player : MonoBehaviour {
     private void PlayClip(AudioClip clip)
     {
         source.clip = clip;
+        source.volume = gm.SFXVolume();
         source.Play();
     }
 }

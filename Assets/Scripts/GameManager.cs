@@ -11,6 +11,9 @@ public class GameManager : MonoBehaviour {
     public int StartBatteries;
     public Text BatteryText;
 
+    public GameObject CompletionPanel;
+    public GameObject RetryPanel;
+
     public AudioClip BatteryPickupClip;
     public AudioClip GoldPickupClip;
     public AudioClip DeathClip;
@@ -19,6 +22,7 @@ public class GameManager : MonoBehaviour {
     int goldCount;
     int levelGoldCount;
 
+    float sfxVolume;
     AudioSource source;
     Coroutine lightCoroutine;
     Map map;
@@ -38,11 +42,14 @@ public class GameManager : MonoBehaviour {
 
     private void Start()
     {
+        sfxVolume = PlayerPrefs.GetFloat("SFX");
         map = Map.Instance;
         source = GetComponent<AudioSource>();
         levelGoldCount = map.GetLevelGold();
         batteryCount = StartBatteries;
         BatteryText.text = "x" + batteryCount.ToString();
+        CompletionPanel.SetActive(false);
+        RetryPanel.SetActive(false);
     }
 
     public void AddGold()
@@ -50,7 +57,8 @@ public class GameManager : MonoBehaviour {
         goldCount++;
         PlayClip(GoldPickupClip);
         if (goldCount == levelGoldCount) {
-            //Load next level here
+            PlayerPrefs.SetInt("Level", PlayerPrefs.GetInt("Level") + 1);
+            CompletionPanel.SetActive(true);
             Debug.Log("Completed level!");
             Won = true;
         }
@@ -87,8 +95,14 @@ public class GameManager : MonoBehaviour {
     public void Die()
     {
         PlayClip(DeathClip);
+        RetryPanel.SetActive(true);
         Debug.Log("You are dead");
         Dead = true;
+    }
+
+    public float SFXVolume()
+    {
+        return sfxVolume;
     }
 
     private void OnApplicationQuit()
@@ -118,9 +132,15 @@ public class GameManager : MonoBehaviour {
         } while (MineMaterial.color != Dark);
     }
 
+    public void ResetMaterialColor()
+    {
+        MineMaterial.color = Color.white;
+    }
+
     private void PlayClip(AudioClip clip)
     {
         source.clip = clip;
+        source.volume = SFXVolume();
         source.Play();
     }
 }

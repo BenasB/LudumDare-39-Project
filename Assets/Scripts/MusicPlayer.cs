@@ -1,16 +1,27 @@
-﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MusicPlayer : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public static MusicPlayer Instance;
+
+    AudioSource source;
+
+    private void Awake()
+    {
+        if (!Instance)
+            Instance = this;
+        else
+            Destroy(gameObject);
+    }
+
+    private void Start()
+    {
+        source = GetComponent<AudioSource>();
+        DontDestroyOnLoad(gameObject);
+    }
+
+    public void ChangeVolume(float volume)
+    {
+        source.volume = volume;
+    }
 }
