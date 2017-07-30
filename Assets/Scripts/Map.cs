@@ -160,6 +160,11 @@ public class Map : MonoBehaviour {
         target.position = position;
     }
 
+    public void SetPlayerPosition(Vector3 position)
+    {
+        playerPosition = position;
+    }
+
     public void RemoveObstacle(Transform transform)
     {
         obstacles.Remove(transform);

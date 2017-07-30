@@ -10,7 +10,6 @@ public class GameManager : MonoBehaviour {
     public Color Dark;
     public int StartBatteries;
     public Text BatteryText;
-    public Text GoldText;
 
     int batteryCount;
     int goldCount;
@@ -36,14 +35,12 @@ public class GameManager : MonoBehaviour {
         map = Map.Instance;
         levelGoldCount = map.GetLevelGold();
         batteryCount = StartBatteries;
-        BatteryText.text = "Batteries: " + batteryCount.ToString();
-        GoldText.text = "Gold: " + goldCount.ToString();
+        BatteryText.text = "x" + batteryCount.ToString();
     }
 
     public void AddGold()
     {
         goldCount++;
-        GoldText.text = "Gold: " + goldCount.ToString();
         if (goldCount == levelGoldCount) {
             Debug.Log("Completed level!");
             Won = true;
@@ -53,7 +50,7 @@ public class GameManager : MonoBehaviour {
     public void AddBatteries(int amount)
     {
         batteryCount += amount;
-        BatteryText.text = "Batteries: " + batteryCount.ToString();
+        BatteryText.text = "x" + batteryCount.ToString();
         if (batteryCount > 0)
         {
             if (lightCoroutine != null)
@@ -67,7 +64,7 @@ public class GameManager : MonoBehaviour {
         if (batteryCount > 0)
         {
             batteryCount--;
-            BatteryText.text = "Batteries: " + batteryCount.ToString();
+            BatteryText.text = "x" + batteryCount.ToString();
             if (batteryCount == 0)
             {
                 if (lightCoroutine != null)
@@ -84,7 +81,7 @@ public class GameManager : MonoBehaviour {
 
     IEnumerator Darken()
     {
-        float speed = 6f;
+        float speed = 7f;
         do
         {
             Vector3 newColor = Vector3.MoveTowards(new Vector3(MineMaterial.color.r, MineMaterial.color.g, MineMaterial.color.b), new Vector3(Dark.r,Dark.g, Dark.b), speed*Time.deltaTime);
@@ -95,7 +92,7 @@ public class GameManager : MonoBehaviour {
 
     IEnumerator Lighten()
     {
-        float speed = 6f;
+        float speed = 7f;
         do
         {
             Vector3 newColor = Vector3.MoveTowards(new Vector3(MineMaterial.color.r, MineMaterial.color.g, MineMaterial.color.b), new Vector3(Color.white.r, Color.white.g, Color.white.b), speed * Time.deltaTime);

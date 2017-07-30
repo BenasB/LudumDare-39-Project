@@ -10,6 +10,8 @@ public class Player : MonoBehaviour {
         map = Map.Instance;
         if (!map)
             Debug.LogError("Can't find the instance of the map script");
+
+        map.SetPlayerPosition(transform.position);
     }
 
     private void Update()
