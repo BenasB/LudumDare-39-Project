@@ -96,7 +96,7 @@ public class Map : MonoBehaviour {
                 }
             }
             if (IsPlayerOnEnemy())
-                Debug.Log("You are dead.");
+                gm.Die();
 
             gm.RemoveBattery();
         }
@@ -104,7 +104,7 @@ public class Map : MonoBehaviour {
 
     public void Move(Transform target,Direction direction, bool player)
     {
-        if (!gm.Won)
+        if (!gm.Won && !gm.Dead)
         {
             Vector2 wantedPosition = target.position;
             switch (direction)
@@ -131,7 +131,7 @@ public class Map : MonoBehaviour {
                 }
                 if (IsPlayerOnEnemy())
                 {
-                    Debug.Log("You are dead.");
+                    gm.Die();
                     return;
                 }
             }
@@ -141,7 +141,7 @@ public class Map : MonoBehaviour {
                 PickupItem(playerPosition);
 
                 //Move all enemies towards the player
-                if (!gm.Won)
+                if (!gm.Won && !gm.Dead)
                 {
                     for (int i = 0; i < enemies.Count; i++)
                     {
@@ -150,7 +150,7 @@ public class Map : MonoBehaviour {
                     
                 }
                 if (IsPlayerOnEnemy())
-                    Debug.Log("You are dead.");
+                    gm.Die();
             }
         }
     }

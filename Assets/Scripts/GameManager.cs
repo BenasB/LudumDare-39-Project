@@ -11,14 +11,20 @@ public class GameManager : MonoBehaviour {
     public int StartBatteries;
     public Text BatteryText;
 
+    public AudioClip BatteryPickupClip;
+    public AudioClip GoldPickupClip;
+    public AudioClip DeathClip;
+
     int batteryCount;
     int goldCount;
     int levelGoldCount;
 
+    AudioSource source;
     Coroutine lightCoroutine;
     Map map;
 
     public bool Won { get; set; }
+    public bool Dead { get; set; }
 
     private void Awake()
     {
@@ -33,6 +39,7 @@ public class GameManager : MonoBehaviour {
     private void Start()
     {
         map = Map.Instance;
+        source = GetComponent<AudioSource>();
         levelGoldCount = map.GetLevelGold();
         batteryCount = StartBatteries;
         BatteryText.text = "x" + batteryCount.ToString();
@@ -41,7 +48,9 @@ public class GameManager : MonoBehaviour {
     public void AddGold()
     {
         goldCount++;
+        PlayClip(GoldPickupClip);
         if (goldCount == levelGoldCount) {
+            //Load next level here
             Debug.Log("Completed level!");
             Won = true;
         }
@@ -51,6 +60,7 @@ public class GameManager : MonoBehaviour {
     {
         batteryCount += amount;
         BatteryText.text = "x" + batteryCount.ToString();
+        PlayClip(BatteryPickupClip);
         if (batteryCount > 0)
         {
             if (lightCoroutine != null)
@@ -72,6 +82,13 @@ public class GameManager : MonoBehaviour {
                 lightCoroutine = StartCoroutine(Darken());
             }
         }
+    }
+
+    public void Die()
+    {
+        PlayClip(DeathClip);
+        Debug.Log("You are dead");
+        Dead = true;
     }
 
     private void OnApplicationQuit()
@@ -99,5 +116,11 @@ public class GameManager : MonoBehaviour {
             MineMaterial.color = new Vector4(newColor.x, newColor.y, newColor.z, 1.0f);
             yield return new WaitForEndOfFrame();
         } while (MineMaterial.color != Dark);
+    }
+
+    private void PlayClip(AudioClip clip)
+    {
+        source.clip = clip;
+        source.Play();
     }
 }
