@@ -117,6 +117,9 @@ public class GameManager : MonoBehaviour {
     {
         PlayClip(DeathClip);
         RetryPanel.SetActive(true);
+        if (lightCoroutine != null)
+            StopCoroutine(lightCoroutine);
+        lightCoroutine = StartCoroutine(Lighten());
         Debug.Log("You are dead");
         Dead = true;
     }

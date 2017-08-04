@@ -27,29 +27,35 @@ public class Player : MonoBehaviour {
         {
             if (Input.GetButtonDown("Up"))
             {
-                map.Move(transform, Map.Direction.Up, true);
-                PlayClip(MoveClip);
+                Action action = map.Move(transform, Map.Direction.Up);
+                if (action == Action.Walk)
+                    PlayClip(MoveClip);
+                else if (action == Action.Hit)
+                    PlayClip(ActionClip);
             }
             if (Input.GetButtonDown("Down"))
             {
-                map.Move(transform, Map.Direction.Down, true);
-                PlayClip(MoveClip);
+                Action action = map.Move(transform, Map.Direction.Down);
+                if (action == Action.Walk)
+                    PlayClip(MoveClip);
+                else if (action == Action.Hit)
+                    PlayClip(ActionClip);
             }
             if (Input.GetButtonDown("Left"))
             {
-                map.Move(transform, Map.Direction.Left, true);
-                PlayClip(MoveClip);
+                Action action = map.Move(transform, Map.Direction.Left);
+                if (action == Action.Walk)
+                    PlayClip(MoveClip);
+                else if (action == Action.Hit)
+                    PlayClip(ActionClip);
             }
             if (Input.GetButtonDown("Right"))
             {
-                map.Move(transform, Map.Direction.Right, true);
-                PlayClip(MoveClip);
-            }
-
-            if (Input.GetButtonDown("Hit"))
-            {
-                map.Hit(transform.position);
-                PlayClip(ActionClip);
+                Action action = map.Move(transform, Map.Direction.Right);
+                if (action == Action.Walk)
+                    PlayClip(MoveClip);
+                else if (action == Action.Hit)
+                    PlayClip(ActionClip);
             }
         }
     }

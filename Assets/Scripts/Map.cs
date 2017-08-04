@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+public enum Action { Walk, Hit, None }
+
 public class Map : MonoBehaviour {
 
     public static Map Instance;
@@ -36,74 +38,9 @@ public class Map : MonoBehaviour {
         gm = GameManager.Instance;  
     }
 
-    public void Hit(Vector3 position)
+    public Action Move(Transform target,Direction direction)
     {
-        if (!gm.Won)
-        {
-            List<Transform> obstaclesAtThisMoment = new List<Transform>();
-
-            for (int i = 0; i < obstacles.Count; i++)
-            {
-                obstaclesAtThisMoment.Add(obstacles[i]);
-            }
-
-            for (int i = 0; i < obstaclesAtThisMoment.Count; i++)
-            {
-                if (obstaclesAtThisMoment[i].position == position + Vector3.up)
-                {
-                    IDamagable top = obstaclesAtThisMoment[i].GetComponent<IDamagable>();
-                    if (top != null)
-                    {
-                        top.Damage();
-                        continue;
-                    }
-                }
-                if (obstaclesAtThisMoment[i].position == position + Vector3.down)
-                {
-                    IDamagable down = obstaclesAtThisMoment[i].GetComponent<IDamagable>();
-                    if (down != null)
-                    {
-                        down.Damage();
-                        continue;
-                    }
-                }
-                if (obstaclesAtThisMoment[i].position == position + Vector3.left)
-                {
-                    IDamagable left = obstaclesAtThisMoment[i].GetComponent<IDamagable>();
-                    if (left != null)
-                    {
-                        left.Damage();
-                        continue;
-                    }
-                }
-                if (obstaclesAtThisMoment[i].position == position + Vector3.right)
-                {
-                    IDamagable right = obstaclesAtThisMoment[i].GetComponent<IDamagable>();
-                    if (right != null)
-                    {
-                        right.Damage();
-                        continue;
-                    }
-                }
-            }
-
-            //Move all enemies towards the player
-            if (!gm.Won)
-            {
-                for (int i = 0; i < enemies.Count; i++)
-                {
-                    enemies[i].GetComponent<Enemy>().MoveTowardsTarget(playerPosition);
-                }
-            }
-            if (IsPlayerOnEnemy())
-                gm.Die();
-
-            gm.RemoveBattery();
-        }
-    }
-
-    public void Move(Transform target,Direction direction, bool player)
-    {
+        Action action = Action.None;
         if (!gm.Won && !gm.Dead)
         {
             Vector2 wantedPosition = target.position;
@@ -122,37 +59,43 @@ public class Map : MonoBehaviour {
                     wantedPosition += Vector2.right;
                     break;
             }
-            if (Walkable(wantedPosition))
+            if (CanAttack(wantedPosition) != null)
+            {
+                Debug.Log("This");
+                CanAttack(wantedPosition).Damage();
+                action = Action.Hit;
+
+                gm.RemoveBattery();
+            }
+            else if (CanWalk(wantedPosition))
             {
                 target.position = wantedPosition;
-                if (player)
-                {
-                    playerPosition = target.position;
-                }
-                if (IsPlayerOnEnemy())
-                {
-                    gm.Die();
-                    return;
-                }
-            }
-            if (player)
-            {
-                gm.RemoveBattery();
-                PickupItem(playerPosition);
+                playerPosition = target.position;
+                action = Action.Walk;
 
-                //Move all enemies towards the player
-                if (!gm.Won && !gm.Dead)
-                {
-                    for (int i = 0; i < enemies.Count; i++)
-                    {
-                        enemies[i].GetComponent<Enemy>().MoveTowardsTarget(playerPosition);
-                    }
-                    
-                }
+                gm.RemoveBattery();
+
                 if (IsPlayerOnEnemy())
+                {
                     gm.Die();
+                    return action;
+                }
             }
+            PickupItem(playerPosition);
+
+            //Move all enemies towards the player
+            if (!gm.Won && !gm.Dead)
+            {
+                for (int i = 0; i < enemies.Count; i++)
+                {
+                    enemies[i].GetComponent<Enemy>().MoveTowardsTarget(playerPosition);
+                }
+                    
+            }
+            if (IsPlayerOnEnemy())
+                gm.Die();
         }
+        return action;
     }
 
     public void Move(Transform target, Vector3 position)
@@ -175,7 +118,21 @@ public class Map : MonoBehaviour {
         obstacles.Add(transform);
     }
 
-    private bool Walkable(Vector3 position)
+    private IDamagable CanAttack(Vector3 position)
+    {
+        IDamagable damagableObject = null;
+        for (int i = 0; i < obstacles.Count; i++)
+        {
+            if (obstacles[i].position == position && obstacles[i].GetComponent<IDamagable>() != null)
+            {
+                damagableObject = obstacles[i].GetComponent<IDamagable>();
+                break;
+            }
+        }
+        return damagableObject;
+    }
+
+    private bool CanWalk(Vector3 position)
     {
         bool canWalk = false;
         for (int i = 0; i < walkableObjects.Count; i++)
@@ -196,6 +153,7 @@ public class Map : MonoBehaviour {
         }
         return canWalk;
     }
+
 
     private void PickupItem(Vector3 position)
     {
@@ -238,13 +196,13 @@ public class Map : MonoBehaviour {
     public IList<Vector3> GetWalkableNodes(Vector3 currentNode)
     {
         IList<Vector3> listToReturn = new List<Vector3>();
-        if (Walkable(currentNode + Vector3.up))
+        if (CanWalk(currentNode + Vector3.up))
             listToReturn.Add(currentNode + Vector3.up);
-        if (Walkable(currentNode + Vector3.down))
+        if (CanWalk(currentNode + Vector3.down))
             listToReturn.Add(currentNode + Vector3.down);
-        if (Walkable(currentNode + Vector3.right))
+        if (CanWalk(currentNode + Vector3.right))
             listToReturn.Add(currentNode + Vector3.right);
-        if (Walkable(currentNode + Vector3.left))
+        if (CanWalk(currentNode + Vector3.left))
             listToReturn.Add(currentNode + Vector3.left);
 
         return listToReturn;
