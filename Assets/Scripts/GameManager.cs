@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour {
     public int StartBatteries;
     public Text BatteryText;
 
+    public GameObject PauseButton;
     public GameObject CompletionPanel;
     public GameObject RetryPanel;
     public GameObject PausePanel;
@@ -41,23 +42,18 @@ public class GameManager : MonoBehaviour {
         MineMaterial.color = Color.white;
     }
 
-    private void Update()
+    public void PauseGame()
     {
-        if (Input.GetButtonDown("Cancel") && !Pause)
-        {
-            Pause = true;
-            PausePanel.SetActive(true);
-        }else if (Input.GetButtonDown("Cancel") && Pause)
-        {
-            Pause = false;
-            PausePanel.SetActive(false);
-        }
+        Pause = true;
+        PausePanel.SetActive(true);
+        PauseButton.SetActive(false);
     }
 
     public void ReturnToGame()
     {
         Pause = false;
         PausePanel.SetActive(false);
+        PauseButton.SetActive(true);
     }
 
     private void Start()
@@ -66,11 +62,15 @@ public class GameManager : MonoBehaviour {
         map = Map.Instance;
         source = GetComponent<AudioSource>();
         levelGoldCount = map.GetLevelGold();
-        batteryCount = StartBatteries;
         BatteryText.text = "x" + batteryCount.ToString();
         CompletionPanel.SetActive(false);
         RetryPanel.SetActive(false);
         PausePanel.SetActive(false);
+    }
+
+    public void SetBatteries(int count)
+    {
+        batteryCount = count;
     }
 
     public void AddGold()

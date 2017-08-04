@@ -38,7 +38,7 @@ public class Map : MonoBehaviour {
         gm = GameManager.Instance;  
     }
 
-    public Action Move(Transform target,Direction direction)
+    public Action Move(Transform target, Direction direction, bool player)
     {
         Action action = Action.None;
 
@@ -67,7 +67,7 @@ public class Map : MonoBehaviour {
             gm.RemoveBattery();
             MoveEnemies();
         }
-        else if (CanWalk(wantedPosition))
+        else if (CanWalk(wantedPosition, player))
         {
             target.position = wantedPosition;
             playerPosition = target.position;
@@ -129,7 +129,7 @@ public class Map : MonoBehaviour {
         return damagableObject;
     }
 
-    private bool CanWalk(Vector3 position)
+    private bool CanWalk(Vector3 position, bool player)
     {
         bool canWalk = false;
         for (int i = 0; i < walkableObjects.Count; i++)
@@ -148,12 +148,15 @@ public class Map : MonoBehaviour {
                 break;
             }
         }
-        for (int i = 0; i < enemies.Count; i++)
+        if (player)
         {
-            if (enemies[i].position == position)
+            for (int i = 0; i < enemies.Count; i++)
             {
-                canWalk = false;
-                break;
+                if (enemies[i].position == position)
+                {
+                    canWalk = false;
+                    break;
+                }
             }
         }
         return canWalk;
@@ -201,13 +204,13 @@ public class Map : MonoBehaviour {
     public IList<Vector3> GetWalkableNodes(Vector3 currentNode)
     {
         IList<Vector3> listToReturn = new List<Vector3>();
-        if (CanWalk(currentNode + Vector3.up))
+        if (CanWalk(currentNode + Vector3.up, false))
             listToReturn.Add(currentNode + Vector3.up);
-        if (CanWalk(currentNode + Vector3.down))
+        if (CanWalk(currentNode + Vector3.down, false))
             listToReturn.Add(currentNode + Vector3.down);
-        if (CanWalk(currentNode + Vector3.right))
+        if (CanWalk(currentNode + Vector3.right, false))
             listToReturn.Add(currentNode + Vector3.right);
-        if (CanWalk(currentNode + Vector3.left))
+        if (CanWalk(currentNode + Vector3.left, false))
             listToReturn.Add(currentNode + Vector3.left);
 
         return listToReturn;

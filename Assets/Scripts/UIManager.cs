@@ -21,12 +21,20 @@ public class UIManager : MonoBehaviour {
     {
         gm.ResetMaterialColor();
         SceneManager.LoadScene("Level " + PlayerPrefs.GetInt("Level"));
+        if (PlayerPrefs.GetInt("Level") != 11)
+            SceneManager.LoadScene("UIScene", LoadSceneMode.Additive);
     }
 
     public void RetryLevel()
     {
         gm.ResetMaterialColor();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene("UIScene", LoadSceneMode.Additive);
+    }
+
+    public void Pause()
+    {
+        gm.PauseGame();
     }
 
     public void Unpause()

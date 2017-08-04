@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour {
 
+    public int StartBatteries;
+
     public AudioClip MoveClip;
     public AudioClip ActionClip;
 
@@ -21,6 +23,7 @@ public class Player : MonoBehaviour {
             Debug.LogError("Can't find the instance of the map script");
 
         map.SetPlayerPosition(transform.position);
+        gm.SetBatteries(StartBatteries);
     }
 
     private void Update()
@@ -29,7 +32,7 @@ public class Player : MonoBehaviour {
         {
             if (swipeInput.SwipeUp)
             {
-                Action action = map.Move(transform, Map.Direction.Up);
+                Action action = map.Move(transform, Map.Direction.Up, true);
                 if (action == Action.Walk)
                     PlayClip(MoveClip);
                 else if (action == Action.Hit)
@@ -37,7 +40,7 @@ public class Player : MonoBehaviour {
             }
             if (swipeInput.SwipeDown)
             {
-                Action action = map.Move(transform, Map.Direction.Down);
+                Action action = map.Move(transform, Map.Direction.Down, true);
                 if (action == Action.Walk)
                     PlayClip(MoveClip);
                 else if (action == Action.Hit)
@@ -45,7 +48,7 @@ public class Player : MonoBehaviour {
             }
             if (swipeInput.SwipeLeft)
             {
-                Action action = map.Move(transform, Map.Direction.Left);
+                Action action = map.Move(transform, Map.Direction.Left, true);
                 if (action == Action.Walk)
                     PlayClip(MoveClip);
                 else if (action == Action.Hit)
@@ -53,7 +56,7 @@ public class Player : MonoBehaviour {
             }
             if (swipeInput.SwipeRight)
             {
-                Action action = map.Move(transform, Map.Direction.Right);
+                Action action = map.Move(transform, Map.Direction.Right, true);
                 if (action == Action.Walk)
                     PlayClip(MoveClip);
                 else if (action == Action.Hit)
