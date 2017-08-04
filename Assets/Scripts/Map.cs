@@ -41,60 +41,43 @@ public class Map : MonoBehaviour {
     public Action Move(Transform target,Direction direction)
     {
         Action action = Action.None;
-        if (!gm.Won && !gm.Dead)
+
+        Vector2 wantedPosition = target.position;
+        switch (direction)
         {
-            Vector2 wantedPosition = target.position;
-            switch (direction)
-            {
-                case Direction.Up:
-                    wantedPosition += Vector2.up;
-                    break;
-                case Direction.Down:
-                    wantedPosition += Vector2.down;
-                    break;
-                case Direction.Left:
-                    wantedPosition += Vector2.left;
-                    break;
-                case Direction.Right:
-                    wantedPosition += Vector2.right;
-                    break;
-            }
-            if (CanAttack(wantedPosition) != null)
-            {
-                Debug.Log("This");
-                CanAttack(wantedPosition).Damage();
-                action = Action.Hit;
-
-                gm.RemoveBattery();
-            }
-            else if (CanWalk(wantedPosition))
-            {
-                target.position = wantedPosition;
-                playerPosition = target.position;
-                action = Action.Walk;
-
-                gm.RemoveBattery();
-
-                if (IsPlayerOnEnemy())
-                {
-                    gm.Die();
-                    return action;
-                }
-            }
-            PickupItem(playerPosition);
-
-            //Move all enemies towards the player
-            if (!gm.Won && !gm.Dead)
-            {
-                for (int i = 0; i < enemies.Count; i++)
-                {
-                    enemies[i].GetComponent<Enemy>().MoveTowardsTarget(playerPosition);
-                }
-                    
-            }
-            if (IsPlayerOnEnemy())
-                gm.Die();
+            case Direction.Up:
+                wantedPosition += Vector2.up;
+                break;
+            case Direction.Down:
+                wantedPosition += Vector2.down;
+                break;
+            case Direction.Left:
+                wantedPosition += Vector2.left;
+                break;
+            case Direction.Right:
+                wantedPosition += Vector2.right;
+                break;
         }
+        if (CanAttack(wantedPosition) != null)
+        {
+            Debug.Log("Hit an object");
+            CanAttack(wantedPosition).Damage();
+            action = Action.Hit;
+
+            gm.RemoveBattery();
+            MoveEnemies();
+        }
+        else if (CanWalk(wantedPosition))
+        {
+            target.position = wantedPosition;
+            playerPosition = target.position;
+            action = Action.Walk;
+
+            gm.RemoveBattery();
+            MoveEnemies();
+        }
+        PickupItem(playerPosition);
+
         return action;
     }
 
@@ -116,6 +99,20 @@ public class Map : MonoBehaviour {
     public void AddObstacle(Transform transform)
     {
         obstacles.Add(transform);
+    }
+
+    private void MoveEnemies()
+    {
+        if (!gm.Won && !gm.Dead)
+        {
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                enemies[i].GetComponent<Enemy>().MoveTowardsTarget(playerPosition);
+            }
+
+        }
+        if (IsPlayerOnEnemy())
+            gm.Die();
     }
 
     private IDamagable CanAttack(Vector3 position)
@@ -146,6 +143,14 @@ public class Map : MonoBehaviour {
         for (int i = 0; i < obstacles.Count; i++)
         {
             if (obstacles[i].position == position && obstacles[i].GetComponent<IPickupable>() == null)
+            {
+                canWalk = false;
+                break;
+            }
+        }
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            if (enemies[i].position == position)
             {
                 canWalk = false;
                 break;
