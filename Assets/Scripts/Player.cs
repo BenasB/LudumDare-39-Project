@@ -8,11 +8,13 @@ public class Player : MonoBehaviour {
     Map map;
     GameManager gm;
     AudioSource source;
+    Swipe swipeInput;
     Vector2 input;
 
     private void Start()
     {
         source = GetComponent<AudioSource>();
+        swipeInput = GetComponent<Swipe>();
         map = Map.Instance;
         gm = GameManager.Instance;
         if (!map)
@@ -25,7 +27,7 @@ public class Player : MonoBehaviour {
     {
         if (!gm.Dead && !gm.Won && !gm.Pause)
         {
-            if (Input.GetButtonDown("Up"))
+            if (swipeInput.SwipeUp)
             {
                 Action action = map.Move(transform, Map.Direction.Up);
                 if (action == Action.Walk)
@@ -33,7 +35,7 @@ public class Player : MonoBehaviour {
                 else if (action == Action.Hit)
                     PlayClip(ActionClip);
             }
-            if (Input.GetButtonDown("Down"))
+            if (swipeInput.SwipeDown)
             {
                 Action action = map.Move(transform, Map.Direction.Down);
                 if (action == Action.Walk)
@@ -41,7 +43,7 @@ public class Player : MonoBehaviour {
                 else if (action == Action.Hit)
                     PlayClip(ActionClip);
             }
-            if (Input.GetButtonDown("Left"))
+            if (swipeInput.SwipeLeft)
             {
                 Action action = map.Move(transform, Map.Direction.Left);
                 if (action == Action.Walk)
@@ -49,7 +51,7 @@ public class Player : MonoBehaviour {
                 else if (action == Action.Hit)
                     PlayClip(ActionClip);
             }
-            if (Input.GetButtonDown("Right"))
+            if (swipeInput.SwipeRight)
             {
                 Action action = map.Move(transform, Map.Direction.Right);
                 if (action == Action.Walk)
