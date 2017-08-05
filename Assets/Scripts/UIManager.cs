@@ -33,15 +33,8 @@ public class UIManager : MonoBehaviour {
     public void RetryLevel()
     {
         gm.ResetMaterialColor();
-        if (SceneListCheck.Has("Level " + PlayerPrefs.GetInt("Level")))
-        {
-            SceneManager.LoadScene("Level " + PlayerPrefs.GetInt("Level"));
-            SceneManager.LoadScene("UIScene", LoadSceneMode.Additive);
-        }
-        else
-        {
-            SceneManager.LoadScene("Credits");
-        }
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene("UIScene", LoadSceneMode.Additive);
     }
 
     public void Pause()
