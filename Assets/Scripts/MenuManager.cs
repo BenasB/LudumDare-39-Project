@@ -64,9 +64,15 @@ public class MenuManager : MonoBehaviour {
 
     public void StartGame()
     {
-        SceneManager.LoadScene("Level " + PlayerPrefs.GetInt("Level"));
-        if (PlayerPrefs.GetInt("Level") != 11)
+        if (SceneListCheck.Has("Level " + PlayerPrefs.GetInt("Level")))
+        {
+            SceneManager.LoadScene("Level " + PlayerPrefs.GetInt("Level"));
             SceneManager.LoadScene("UIScene", LoadSceneMode.Additive);
+        }
+        else
+        {
+            SceneManager.LoadScene("Credits");
+        }
     }
 
     public void ExitGame()

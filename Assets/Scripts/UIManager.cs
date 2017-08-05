@@ -20,16 +20,28 @@ public class UIManager : MonoBehaviour {
     public void LoadNextLevel()
     {
         gm.ResetMaterialColor();
-        SceneManager.LoadScene("Level " + PlayerPrefs.GetInt("Level"));
-        if (PlayerPrefs.GetInt("Level") != 11)
+        if (SceneListCheck.Has("Level " + PlayerPrefs.GetInt("Level")))
+        {
+            SceneManager.LoadScene("Level " + PlayerPrefs.GetInt("Level"));
             SceneManager.LoadScene("UIScene", LoadSceneMode.Additive);
+        }else
+        {
+            SceneManager.LoadScene("Credits");
+        }
     }
 
     public void RetryLevel()
     {
         gm.ResetMaterialColor();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        SceneManager.LoadScene("UIScene", LoadSceneMode.Additive);
+        if (SceneListCheck.Has("Level " + PlayerPrefs.GetInt("Level")))
+        {
+            SceneManager.LoadScene("Level " + PlayerPrefs.GetInt("Level"));
+            SceneManager.LoadScene("UIScene", LoadSceneMode.Additive);
+        }
+        else
+        {
+            SceneManager.LoadScene("Credits");
+        }
     }
 
     public void Pause()
