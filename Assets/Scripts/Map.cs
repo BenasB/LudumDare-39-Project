@@ -76,7 +76,7 @@ public class Map : MonoBehaviour {
             gm.RemoveBattery();
             MoveEnemies();
         }
-        PickupItem(playerPosition);
+        Interact(playerPosition);
 
         return action;
     }
@@ -142,7 +142,7 @@ public class Map : MonoBehaviour {
         }
         for (int i = 0; i < obstacles.Count; i++)
         {
-            if (obstacles[i].position == position && obstacles[i].GetComponent<IPickupable>() == null)
+            if (obstacles[i].position == position && obstacles[i].GetComponent<IInteractable>() == null)
             {
                 canWalk = false;
                 break;
@@ -163,15 +163,15 @@ public class Map : MonoBehaviour {
     }
 
 
-    private void PickupItem(Vector3 position)
+    private void Interact(Vector3 position)
     {
         for (int i = 0; i < obstacles.Count; i++)
         {
             if (obstacles[i].position == position)
             {
-                IPickupable item = obstacles[i].GetComponent<IPickupable>();
+                IInteractable item = obstacles[i].GetComponent<IInteractable>();
                 if (item != null)
-                    item.Pickup();
+                    item.Interact();
             }
         }
     }

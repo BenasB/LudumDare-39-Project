@@ -22,7 +22,8 @@ public class Enemy : MonoBehaviour {
             path.Add(curr);
             curr = nodeParents[curr];
         }
-        map.Move(transform, path[path.Count - 1]);
+        if (path.Count > 0)
+            map.Move(transform, path[path.Count - 1]);
     }
 
     Vector3 FindShortestPath(Vector3 target)

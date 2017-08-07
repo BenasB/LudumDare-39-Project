@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Battery : MonoBehaviour, IPickupable {
+public class Battery : MonoBehaviour, IInteractable {
 
     public int Batteries = 1;
     GameManager gm;
@@ -12,7 +12,7 @@ public class Battery : MonoBehaviour, IPickupable {
         map = Map.Instance;
     }
 
-    public void Pickup()
+    public void Interact()
     {
         gm.AddBatteries(Batteries);
         map.RemoveObstacle(transform);

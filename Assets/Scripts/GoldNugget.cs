@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class GoldNugget : MonoBehaviour, IPickupable
+public class GoldNugget : MonoBehaviour, IInteractable
 {
     Map map;
     GameManager gm;
@@ -11,7 +11,7 @@ public class GoldNugget : MonoBehaviour, IPickupable
         map = Map.Instance;
     }
 
-    public void Pickup()
+    public void Interact()
     {
         map.RemoveObstacle(transform);
         gm.AddGold();

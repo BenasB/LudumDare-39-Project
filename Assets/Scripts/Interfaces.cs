@@ -3,7 +3,7 @@ public interface IDamagable
     void Damage();
 }
 
-public interface IPickupable
+public interface IInteractable
 {
-    void Pickup();
+    void Interact();
 }

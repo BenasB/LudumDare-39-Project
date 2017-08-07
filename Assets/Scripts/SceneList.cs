@@ -15,7 +15,10 @@ public enum Scenes
 	Level_10 = 10,
 	Level_11 = 11,
 	Level_12 = 12,
-	Credits = 13,
-	UIScene = 14
+	Level_13 = 13,
+	Level_14 = 14,
+	Level_15 = 15,
+	Credits = 16,
+	UIScene = 17
 }
 
